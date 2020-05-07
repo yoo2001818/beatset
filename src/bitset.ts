@@ -10,7 +10,7 @@ const BITS_PER_WORD = 32;
  * @static
  */
 const HAMMING_TABLE = [
-  0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4
+  0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4,
 ];
 
 /**
@@ -22,7 +22,8 @@ const HAMMING_TABLE = [
  */
 export default class BitSet {
   words: Uint32Array;
-  constructor(value: BitSet | ?number) {
+
+  constructor(value?: BitSet | number | null) {
     if (value instanceof BitSet) {
       this.words = new Uint32Array(value.words);
     } else if (value != null) {
@@ -31,14 +32,16 @@ export default class BitSet {
       this.words = new Uint32Array(1);
     }
   }
+
   checkBounds(pos: number): void {
     if (pos < 0 || pos >= this.words.length * BITS_PER_WORD) {
       // throw new Error('BitSet pos ' + pos + ' is out of bounds');
-      let newWords = new Uint32Array(Math.ceil((pos + 1) / BITS_PER_WORD));
+      const newWords = new Uint32Array(Math.ceil((pos + 1) / BITS_PER_WORD));
       newWords.set(this.words);
       this.words = newWords;
     }
   }
+
   /**
    * Returns BitSet's allocated size in bits.
    * @returns {Number} allocated size in bits.
@@ -46,6 +49,7 @@ export default class BitSet {
   size(): number {
     return this.words.length * BITS_PER_WORD;
   }
+
   /**
    * Sets specified bit to false.
    * @param pos {Number} - The bit position to set to false.
@@ -54,6 +58,7 @@ export default class BitSet {
   clear(pos: number): void {
     this.set(pos, false);
   }
+
   /**
    * Sets specified range of bits to false.
    * @param from {Number} - The start bit position.
@@ -63,6 +68,7 @@ export default class BitSet {
   clearRange(from: number, to: number): void {
     this.setRange(from, to, false);
   }
+
   /**
    * Sets all bits to false.
    * @see {@link BitSet#setAll}
@@ -70,6 +76,7 @@ export default class BitSet {
   clearAll(): void {
     this.setAll(false);
   }
+
   /**
    * Sets specified bit.
    * @param pos {Number} - The bit position to set.
@@ -77,14 +84,15 @@ export default class BitSet {
    */
   set(pos: number, set: number | boolean = true): void {
     this.checkBounds(pos);
-    let wordPos = pos / BITS_PER_WORD | 0;
-    let shiftPos = (pos % BITS_PER_WORD);
+    const wordPos = pos / BITS_PER_WORD | 0;
+    const shiftPos = (pos % BITS_PER_WORD);
     if (set) {
       this.words[wordPos] |= 1 << shiftPos;
     } else {
       this.words[wordPos] &= ~(1 << shiftPos);
     }
   }
+
   /**
    * Sets specified range of bits.
    * @param from {Number} - The start bit position.
@@ -93,9 +101,9 @@ export default class BitSet {
    */
   setRange(from: number, to: number, set: number | boolean = true): void {
     this.checkBounds(to);
-    for (let i = from; i <= to; ++i) {
-      let wordPos = i / BITS_PER_WORD | 0;
-      let shiftPos = (i % BITS_PER_WORD);
+    for (let i = from; i <= to; i += 1) {
+      const wordPos = i / BITS_PER_WORD | 0;
+      const shiftPos = (i % BITS_PER_WORD);
       if (set) {
         this.words[wordPos] |= 1 << shiftPos;
       } else {
@@ -103,6 +111,7 @@ export default class BitSet {
       }
     }
   }
+
   /**
    * Sets all bits.
    * @param set {Boolean} - The value to set.
@@ -110,10 +119,11 @@ export default class BitSet {
   setAll(set: number | boolean = true): void {
     let val = 0;
     if (set) val = ~0;
-    for (let i = 0; i < this.words.length; ++i) {
+    for (let i = 0; i < this.words.length; i += 1) {
       this.words[i] = val;
     }
   }
+
   /**
    * Returns the value of specified bit.
    * @param pos {Number} - The bit position.
@@ -121,22 +131,26 @@ export default class BitSet {
    */
   get(pos: number): boolean {
     this.checkBounds(pos);
-    let wordPos = pos / BITS_PER_WORD | 0;
-    let shiftPos = (pos % BITS_PER_WORD);
+    const wordPos = pos / BITS_PER_WORD | 0;
+    const shiftPos = (pos % BITS_PER_WORD);
     return (this.words[wordPos] & (1 << shiftPos)) !== 0;
   }
+
   /**
    * Performs AND logical operation on two BitSet.
    * That means it will be set to 1 if both are 1, 0 otherwise.
    * The result will be applied to this BitSet.
    * @param set {BitSet} - The other BitSet.
    */
-  and(set: ?BitSet): void {
-    if (set == null) return this.clearAll();
-    let intersectSize = Math.min(this.words.length, set.words.length);
-    let unionSize = Math.max(this.words.length, set.words.length);
+  and(set?: BitSet | null): void {
+    if (set == null) {
+      this.clearAll();
+      return;
+    }
+    const intersectSize = Math.min(this.words.length, set.words.length);
+    const unionSize = Math.max(this.words.length, set.words.length);
     this.checkBounds(unionSize * BITS_PER_WORD - 1);
-    for (let i = 0; i < unionSize; ++i) {
+    for (let i = 0; i < unionSize; i += 1) {
       if (i > intersectSize) {
         this.words[i] = 0;
       } else {
@@ -144,105 +158,111 @@ export default class BitSet {
       }
     }
   }
+
   /**
    * Performs OR logical operation on two BitSet.
    * That means it will be set to 1 if one of them is 1, 0 if both are 0.
    * The result will be applied to this BitSet.
    * @param set {BitSet} - The other BitSet.
    */
-  or(set: ?BitSet): void {
+  or(set?: BitSet | null): void {
     if (set == null) return;
-    let unionSize = Math.max(this.words.length, set.words.length);
+    const unionSize = Math.max(this.words.length, set.words.length);
     this.checkBounds(unionSize * BITS_PER_WORD - 1);
-    for (let i = 0; i < unionSize; ++i) this.words[i] |= set.words[i];
+    for (let i = 0; i < unionSize; i += 1) this.words[i] |= set.words[i];
   }
+
   /**
    * Performs XOR logical operation on two BitSet.
    * That means it will be set to 1 if the bits are different, 0 if same.
    * The result will be applied to this BitSet.
    * @param set {BitSet} - The other BitSet.
    */
-  xor(set: ?BitSet): void {
+  xor(set?: BitSet | null): void {
     if (set == null) return;
-    let unionSize = Math.max(this.words.length, set.words.length);
+    const unionSize = Math.max(this.words.length, set.words.length);
     this.checkBounds(unionSize * BITS_PER_WORD - 1);
-    for (let i = 0; i < unionSize; ++i) this.words[i] ^= set.words[i];
+    for (let i = 0; i < unionSize; i += 1) this.words[i] ^= set.words[i];
   }
+
   /**
    * Performs NOT logical operation on the BitSet.
    * That means it will be set to 1 if bit is 0, 0 otherwise.
    * The result will be applied to this BitSet.
    */
   not(): void {
-    for (let i = 0; i < this.words.length; ++i) {
+    for (let i = 0; i < this.words.length; i += 1) {
       this.words[i] = ~this.words[i];
     }
   }
+
   /**
    * Checkes whether the BitSet is filled with 0.
    * This function will return false if the BitSet has any bit that is set to 1.
    * @returns {Boolean} Whether if the BitSet is empty.
    */
   isEmpty(): boolean {
-    for (let i = 0; i < this.words.length; ++i) {
+    for (let i = 0; i < this.words.length; i += 1) {
       if (this.words[i]) return false;
     }
     return true;
   }
+
   /**
    * Checks if two BitSet has a same bit to set to 1.
    * This function will return true if they have matching part, false otherwise.
    * @param set - The other BitSet.
    * @returns {Boolean} Whether if two BitSet intersects.
    */
-  intersects(set: ?BitSet): boolean {
+  intersects(set?: BitSet | null): boolean {
     if (set == null) return false;
-    let intersectSize = Math.min(this.words.length, set.words.length);
-    for (let i = 0; i < intersectSize; ++i) {
+    const intersectSize = Math.min(this.words.length, set.words.length);
+    for (let i = 0; i < intersectSize; i += 1) {
       if (this.words[i] & set.words[i]) return true;
     }
     return false;
   }
+
   /**
    * Checks if this BitSet contains all the bits from the other BitSet.
    * @param set - The other BitSet.
    * @returns {Boolean} Whether if two BitSet intersects.
    */
-  contains(set: ?BitSet): boolean {
+  contains(set?: BitSet | null): boolean {
     if (set == null) return false;
-    let intersectSize = Math.min(this.words.length, set.words.length);
-    for (let i = 0; i < intersectSize; ++i) {
+    const intersectSize = Math.min(this.words.length, set.words.length);
+    for (let i = 0; i < intersectSize; i += 1) {
       if ((this.words[i] & set.words[i]) !== set.words[i]) return false;
     }
     return true;
   }
+
   /**
    * Checks if two BitSet is same.
    * This function will return true if they are same, false otherwise.
    * @param set - The other BitSet.
    * @returns {Boolean} Whether if two BitSet equals.
    */
-  equals(set: ?BitSet): boolean {
+  equals(set?: BitSet | null): boolean {
     if (set == null || !(set instanceof BitSet)) return false;
-    let intersectSize = Math.min(this.words.length, set.words.length);
-    let unionSize = Math.max(this.words.length, set.words.length);
-    for (let i = 0; i < unionSize; ++i) {
+    const intersectSize = Math.min(this.words.length, set.words.length);
+    const unionSize = Math.max(this.words.length, set.words.length);
+    for (let i = 0; i < unionSize; i += 1) {
       if (i > intersectSize) {
         if (set.words[i] || this.words[i]) return false;
-      } else {
-        if (this.words[i] !== set.words[i]) return false;
-      }
+      } else if (this.words[i] !== set.words[i]) return false;
     }
     return true;
   }
+
   /**
    * Returns the number of bits that has set to true in this BitSet.
    * @returns {Number} The number of bits that has set to true.
    */
   cardinality(): number {
     let count = 0;
-    for (let i = 0; i < this.words.length; ++i) {
-      let word = this.words[i];
+    for (let i = 0; i < this.words.length; i += 1) {
+      const word = this.words[i];
       count += HAMMING_TABLE[word & 0xF];
       count += HAMMING_TABLE[(word >>> 4) & 0xF];
       count += HAMMING_TABLE[(word >>> 8) & 0xF];
@@ -254,15 +274,16 @@ export default class BitSet {
     }
     return count;
   }
+
   /**
    * Changes the BitSet to String form.
    * @param {Number} [redix=2] - The redix to use.
    * @returns {String} The stringified BitSet.
    */
   toString(redix: number): string {
-    var map = [];
-    for (let i = 0; i < this.words.length; ++i) {
-      var value = this.words[i];
+    const map = [];
+    for (let i = 0; i < this.words.length; i += 1) {
+      const value = this.words[i];
       map.push(value.toString(redix || 2));
     }
     return map.reverse().join(' ');

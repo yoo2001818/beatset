@@ -1,9 +1,9 @@
-import BitSet from '../src/index';
-import expect from 'expect';
+import BitSet from './index';
 
 describe('BitSet', () => {
-  let bitSet, otherSet;
-  beforeEach('initalize BitSet', () => {
+  let bitSet: BitSet;
+  let otherSet: BitSet;
+  beforeEach(() => {
     bitSet = new BitSet();
     bitSet.set(1);
     bitSet.set(5);
@@ -32,13 +32,13 @@ describe('BitSet', () => {
   describe('#clearRange', () => {
     it('should clear bit range', () => {
       bitSet.clearRange(1, 5);
-      for (let i = 1; i <= 5; ++i) expect(bitSet.get(i)).toBe(false);
+      for (let i = 1; i <= 5; i += 1) expect(bitSet.get(i)).toBe(false);
     });
   });
   describe('#clearAll', () => {
     it('should clear all the bits', () => {
       bitSet.clearAll();
-      for (let i = 0; i < 32; ++i) expect(bitSet.get(i)).toBe(false);
+      for (let i = 0; i < 32; i += 1) expect(bitSet.get(i)).toBe(false);
     });
   });
   describe('#set', () => {
@@ -50,31 +50,31 @@ describe('BitSet', () => {
   describe('#setRange', () => {
     it('should set bit range', () => {
       bitSet.setRange(1, 5);
-      for (let i = 1; i <= 5; ++i) expect(bitSet.get(i)).toBe(true);
+      for (let i = 1; i <= 5; i += 1) expect(bitSet.get(i)).toBe(true);
     });
   });
   describe('#setAll', () => {
     it('should set all the bits', () => {
       bitSet.setAll();
-      for (let i = 0; i < 32; ++i) expect(bitSet.get(i)).toBe(true);
+      for (let i = 0; i < 32; i += 1) expect(bitSet.get(i)).toBe(true);
     });
   });
   describe('#and', () => {
     it('should clear all the bits if target is not provided', () => {
       bitSet.and();
-      for (let i = 0; i < 32; ++i) expect(bitSet.get(i)).toBe(false);
+      for (let i = 0; i < 32; i += 1) expect(bitSet.get(i)).toBe(false);
     });
     it('should compute and correctly', () => {
       bitSet.setRange(0, 16);
       bitSet.and(otherSet);
-      for (let i = 0; i <= 16; ++i) {
+      for (let i = 0; i <= 16; i += 1) {
         expect(bitSet.get(i)).toBe(otherSet.get(i));
       }
     });
     it('should set excess bits to 0', () => {
       bitSet.setRange(0, 128);
       bitSet.and(otherSet);
-      for (let i = 64; i <= 128; ++i) {
+      for (let i = 64; i <= 128; i += 1) {
         expect(bitSet.get(i)).toBe(false);
       }
     });
@@ -83,21 +83,21 @@ describe('BitSet', () => {
     it('should do nothing if target is not provided', () => {
       bitSet.setRange(0, 16);
       bitSet.or();
-      for (let i = 0; i <= 16; ++i) {
+      for (let i = 0; i <= 16; i += 1) {
         expect(bitSet.get(i)).toBe(true);
       }
     });
     it('should compute or correctly', () => {
       bitSet.setRange(0, 16, false);
       bitSet.or(otherSet);
-      for (let i = 0; i <= 16; ++i) {
+      for (let i = 0; i <= 16; i += 1) {
         expect(bitSet.get(i)).toBe(otherSet.get(i));
       }
     });
     it('should set excess bits to bigger one', () => {
       bitSet.setRange(0, 128);
       bitSet.or(otherSet);
-      for (let i = 0; i <= 128; ++i) {
+      for (let i = 0; i <= 128; i += 1) {
         expect(bitSet.get(i)).toBe(true);
       }
     });
@@ -106,30 +106,30 @@ describe('BitSet', () => {
     it('should do nothing if target is not provided', () => {
       bitSet.setRange(0, 16);
       bitSet.xor();
-      for (let i = 0; i <= 16; ++i) {
+      for (let i = 0; i <= 16; i += 1) {
         expect(bitSet.get(i)).toBe(true);
       }
     });
     it('should compute xor correctly', () => {
       bitSet.setRange(0, 16, true);
       bitSet.xor(otherSet);
-      for (let i = 0; i <= 16; ++i) {
+      for (let i = 0; i <= 16; i += 1) {
         expect(bitSet.get(i)).toBe(!otherSet.get(i));
       }
     });
     it('should set excess bits to bigger one', () => {
       bitSet.setRange(0, 128);
       bitSet.xor(otherSet);
-      for (let i = 64; i <= 128; ++i) {
+      for (let i = 64; i <= 128; i += 1) {
         expect(bitSet.get(i)).toBe(true);
       }
     });
   });
   describe('#not', () => {
     it('should compute not correctly', () => {
-      let copy = new BitSet(bitSet);
+      const copy = new BitSet(bitSet);
       bitSet.not();
-      for (let i = 0; i < 32; ++i) {
+      for (let i = 0; i < 32; i += 1) {
         expect(bitSet.get(i)).toBe(!copy.get(i));
       }
     });
