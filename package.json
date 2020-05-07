@@ -2,9 +2,15 @@
   "name": "beatset",
   "version": "0.1.0",
   "description": "Bitset implementation for Javascript",
-  "main": "./lib/index.js",
   "scripts": {
-    "test": "./node_modules/.bin/gulp test"
+    "build": "npm run build:cjs && npm run build:esm",
+    "build:cjs": "tsc -p tsconfig.json --module commonjs --target es5 --outDir lib",
+    "build:esm": "tsc -p tsconfig.json --module esnext --target es6 --outDir lib-esm",
+    "clean": "rm -rf lib/ lib-esm/",
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx src/",
+    "jest": "jest",
+    "test": "npm run lint && npm run jest",
+    "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -17,23 +23,22 @@
   },
   "homepage": "https://github.com/yoo2001818/beatset#readme",
   "devDependencies": {
-    "babel-core": "^6.5.2",
-    "babel-eslint": "^5.0.0",
-    "babel-plugin-syntax-flow": "^6.5.0",
-    "babel-plugin-transform-class-properties": "^6.5.2",
-    "babel-plugin-transform-flow-strip-types": "^6.5.0",
-    "babel-plugin-typecheck": "^3.6.1",
-    "babel-preset-es2015": "^6.5.0",
-    "babel-register": "^6.5.2",
-    "eslint": "~2.2.0",
-    "expect": "^1.14.0",
-    "gulp": "^3.9.1",
-    "gulp-babel": "^6.1.2",
-    "gulp-eslint": "^2.0.0",
-    "gulp-flowtype": "^0.4.9",
-    "gulp-mocha": "^2.2.0",
-    "gulp-util": "^3.0.7",
-    "lodash.range": "^3.1.2",
-    "mocha": "^2.4.5"
-  }
+    "@types/jest": "^25.1.4",
+    "@typescript-eslint/eslint-plugin": "^2.25.0",
+    "@typescript-eslint/parser": "^2.25.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-typescript": "^7.2.1",
+    "eslint-plugin-import": "^2.20.2",
+    "jest": "^25.1.0",
+    "ts-jest": "^25.2.1",
+    "typescript": "^3.8.3"
+  },
+  "files": [
+    "lib",
+    "lib-esm",
+    "src"
+  ],
+  "main": "lib/index.js",
+  "module": "lib-esm/index.js",
+  "sideEffects": false
 }
