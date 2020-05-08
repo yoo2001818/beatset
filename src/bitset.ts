@@ -288,4 +288,15 @@ export default class BitSet {
     }
     return map.reverse().join(' ');
   }
+
+  compare(set: BitSet): number {
+    const intersectSize = Math.min(this.words.length, set.words.length);
+    for (let i = 0; i < intersectSize; i += 1) {
+      const b = set.words[i];
+      const a = this.words[i];
+      if (a < b) return 1;
+      if (a > b) return -1;
+    }
+    return 0;
+  }
 }
