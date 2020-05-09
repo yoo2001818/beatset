@@ -299,4 +299,12 @@ export default class BitSet {
     }
     return 0;
   }
+
+  hashCode(): number {
+    let hash = 17;
+    for (let i = 0; i < this.words.length; i += 1) {
+      hash = hash * 17 + this.words[i] | 0;
+    }
+    return hash;
+  }
 }
