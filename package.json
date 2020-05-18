@@ -1,6 +1,6 @@
 {
   "name": "beatset",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Bitset implementation for Javascript",
   "scripts": {
     "build": "npm run build:cjs && npm run build:esm",
