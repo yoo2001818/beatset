@@ -20,7 +20,7 @@ const HAMMING_TABLE = [
  * @constructor
  * @param [value] - Initial value for the BitSet.
  */
-export default class BitSet {
+export default class BitSet implements Set<number> {
   words: Uint32Array;
 
   constructor(value?: BitSet | number | null) {
@@ -306,5 +306,52 @@ export default class BitSet {
       hash = hash * 17 + this.words[i] | 0;
     }
     return hash;
+  }
+
+  add(value: number): this {
+    throw new Error('Not implemented');
+  }
+
+  clear(): void {
+    throw new Error('Not implemented');
+  }
+
+  delete(value: number): boolean {
+    throw new Error('Not implemented');
+  }
+
+  forEach(
+    callbackfn: (value: number, value2: number, set: this) => void,
+    thisArg?: any,
+  ): void {
+    throw new Error('Not implemented');
+  }
+
+  has(value: number): boolean {
+    throw new Error('Not implemented');
+  }
+  
+  /** Iterates over values in the set. */
+  [Symbol.iterator](): IterableIterator<number> {
+    throw new Error('Not implemented');
+  }
+  /**
+   * Returns an iterable of [v,v] pairs for every value `v` in the set.
+   */
+  entries(): IterableIterator<[number, number]> {
+    throw new Error('Not implemented');
+  }
+  /**
+   * Despite its name, returns an iterable of the values in the set,
+   */
+  keys(): IterableIterator<number> {
+    throw new Error('Not implemented');
+  }
+
+  /**
+   * Returns an iterable of values in the set.
+   */
+  values(): IterableIterator<number> {
+    throw new Error('Not implemented');
   }
 }
