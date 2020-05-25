@@ -21,42 +21,19 @@ const HAMMING_TABLE = [
  * @param [value] - Initial value for the BitSet.
  */
 export default class BitSet implements Set<number> {
-  words: Uint32Array;
+  words: number[];
 
   constructor(value?: BitSet | number | null) {
     if (value instanceof BitSet) {
-      this.words = new Uint32Array(value.words);
+      this.words = value.words.slice();
     } else if (value != null) {
-      this.words = new Uint32Array(Math.ceil(value / BITS_PER_WORD));
+      this.words = new Array(value);
+      for (let i = 0; i < value; i += 1) {
+        this.words[i] = 0;
+      }
     } else {
-      this.words = new Uint32Array(1);
+      this.words = [0];
     }
-  }
-
-  checkBounds(pos: number): void {
-    if (pos < 0 || pos >= this.words.length * BITS_PER_WORD) {
-      // throw new Error('BitSet pos ' + pos + ' is out of bounds');
-      const newWords = new Uint32Array(Math.ceil((pos + 1) / BITS_PER_WORD));
-      newWords.set(this.words);
-      this.words = newWords;
-    }
-  }
-
-  /**
-   * Returns BitSet's allocated size in bits.
-   * @returns {Number} allocated size in bits.
-   */
-  size(): number {
-    return this.words.length * BITS_PER_WORD;
-  }
-
-  /**
-   * Sets specified bit to false.
-   * @param pos {Number} - The bit position to set to false.
-   * @see {@link BitSet#set}
-   */
-  clear(pos: number): void {
-    this.set(pos, false);
   }
 
   /**
@@ -69,12 +46,19 @@ export default class BitSet implements Set<number> {
     this.setRange(from, to, false);
   }
 
-  /**
-   * Sets all bits to false.
-   * @see {@link BitSet#setAll}
-   */
-  clearAll(): void {
-    this.setAll(false);
+  add(value: number): this {
+    this.set(value, true);
+    return this;
+  }
+
+  clear(): void {
+    throw new Error('Not implemented');
+  }
+
+  delete(value: number): boolean {
+    this.set(value, false);
+    // TODO check
+    return true;
   }
 
   /**
@@ -122,6 +106,11 @@ export default class BitSet implements Set<number> {
     for (let i = 0; i < this.words.length; i += 1) {
       this.words[i] = val;
     }
+  }
+
+
+  has(value: number): boolean {
+    return this.get(value);
   }
 
   /**
@@ -308,26 +297,10 @@ export default class BitSet implements Set<number> {
     return hash;
   }
 
-  add(value: number): this {
-    throw new Error('Not implemented');
-  }
-
-  clear(): void {
-    throw new Error('Not implemented');
-  }
-
-  delete(value: number): boolean {
-    throw new Error('Not implemented');
-  }
-
   forEach(
     callbackfn: (value: number, value2: number, set: this) => void,
     thisArg?: any,
   ): void {
-    throw new Error('Not implemented');
-  }
-
-  has(value: number): boolean {
     throw new Error('Not implemented');
   }
   
