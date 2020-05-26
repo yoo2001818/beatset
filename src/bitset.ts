@@ -52,7 +52,9 @@ export default class BitSet implements Set<number> {
   }
 
   clear(): void {
-    throw new Error('Not implemented');
+    for (let i = 0; i < this.words.length; i += 1) {
+      this.words[i] = 0;
+    }
   }
 
   delete(value: number): boolean {
@@ -67,9 +69,11 @@ export default class BitSet implements Set<number> {
    * @param set {Boolean} - The value to set.
    */
   set(pos: number, set: number | boolean = true): void {
-    this.checkBounds(pos);
     const wordPos = pos / BITS_PER_WORD | 0;
     const shiftPos = (pos % BITS_PER_WORD);
+    if (this.words.length <= wordPos) {
+      this.words[wordPos] = 0;
+    }
     if (set) {
       this.words[wordPos] |= 1 << shiftPos;
     } else {
@@ -84,14 +88,48 @@ export default class BitSet implements Set<number> {
    * @param set {Boolean} - The value to set.
    */
   setRange(from: number, to: number, set: number | boolean = true): void {
-    this.checkBounds(to);
-    for (let i = from; i <= to; i += 1) {
-      const wordPos = i / BITS_PER_WORD | 0;
-      const shiftPos = (i % BITS_PER_WORD);
-      if (set) {
-        this.words[wordPos] |= 1 << shiftPos;
+    const startWord = from / BITS_PER_WORD | 0;
+    const endWord = to / BITS_PER_WORD | 0;
+    for (let i = startWord; i <= endWord; i += 1) {
+      if (this.words.length <= i) {
+        this.words[i] = 0;
+      }
+      if (i === startWord && i === endWord) {
+        const fromPos = (from % BITS_PER_WORD);
+        const toPos = (to % BITS_PER_WORD);
+        let word = this.words[i];
+        for (let j = fromPos; j < toPos; j += 1) {
+          if (set) {
+            word |= 1 << j;
+          } else {
+            word &= ~(1 << j);
+          }
+        }
+        this.words[i] = word;
+      } else if (i === startWord) {
+        const fromPos = (from % BITS_PER_WORD);
+        let word = this.words[i];
+        for (let j = fromPos; j < BITS_PER_WORD; j += 1) {
+          if (set) {
+            word |= 1 << j;
+          } else {
+            word &= ~(1 << j);
+          }
+        }
+        this.words[i] = word;
+      } else if (i === endWord) {
+        const toPos = (to % BITS_PER_WORD);
+        let word = this.words[i];
+        for (let j = 0; j < toPos; j += 1) {
+          if (set) {
+            word |= 1 << j;
+          } else {
+            word &= ~(1 << j);
+          }
+        }
+        this.words[i] = word;
       } else {
-        this.words[wordPos] &= ~(1 << shiftPos);
+        this.words[i] = set ? ~0 : 0;
       }
     }
   }
@@ -119,8 +157,8 @@ export default class BitSet implements Set<number> {
    * @returns {Boolean} Whether if the bit is set or not.
    */
   get(pos: number): boolean {
-    this.checkBounds(pos);
     const wordPos = pos / BITS_PER_WORD | 0;
+    if (this.words.length <= wordPos) return false;
     const shiftPos = (pos % BITS_PER_WORD);
     return (this.words[wordPos] & (1 << shiftPos)) !== 0;
   }
@@ -133,12 +171,11 @@ export default class BitSet implements Set<number> {
    */
   and(set?: BitSet | null): void {
     if (set == null) {
-      this.clearAll();
+      this.clear();
       return;
     }
     const intersectSize = Math.min(this.words.length, set.words.length);
     const unionSize = Math.max(this.words.length, set.words.length);
-    this.checkBounds(unionSize * BITS_PER_WORD - 1);
     for (let i = 0; i < unionSize; i += 1) {
       if (i > intersectSize) {
         this.words[i] = 0;
@@ -157,7 +194,6 @@ export default class BitSet implements Set<number> {
   or(set?: BitSet | null): void {
     if (set == null) return;
     const unionSize = Math.max(this.words.length, set.words.length);
-    this.checkBounds(unionSize * BITS_PER_WORD - 1);
     for (let i = 0; i < unionSize; i += 1) this.words[i] |= set.words[i];
   }
 
@@ -170,7 +206,6 @@ export default class BitSet implements Set<number> {
   xor(set?: BitSet | null): void {
     if (set == null) return;
     const unionSize = Math.max(this.words.length, set.words.length);
-    this.checkBounds(unionSize * BITS_PER_WORD - 1);
     for (let i = 0; i < unionSize; i += 1) this.words[i] ^= set.words[i];
   }
 
@@ -266,14 +301,14 @@ export default class BitSet implements Set<number> {
 
   /**
    * Changes the BitSet to String form.
-   * @param {Number} [redix=2] - The redix to use.
+   * @param {Number} [radix=2] - The redix to use.
    * @returns {String} The stringified BitSet.
    */
-  toString(redix: number): string {
+  toString(radix: number = 2): string {
     const map = [];
     for (let i = 0; i < this.words.length; i += 1) {
       const value = this.words[i];
-      map.push(value.toString(redix || 2));
+      map.push(value.toString(radix || 2));
     }
     return map.reverse().join(' ');
   }
