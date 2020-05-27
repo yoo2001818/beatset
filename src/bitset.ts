@@ -333,33 +333,47 @@ export default class BitSet implements Set<number> {
   }
 
   forEach(
-    callbackfn: (value: number, value2: number, set: this) => void,
+    callback: (value: number, value2: number, set: this) => void,
     thisArg?: any,
   ): void {
-    throw new Error('Not implemented');
+    for (const key of this.keys()) {
+      callback.call(thisArg, key, key, this);
+    }
   }
   
   /** Iterates over values in the set. */
   [Symbol.iterator](): IterableIterator<number> {
-    throw new Error('Not implemented');
+    return this.keys();
   }
+
   /**
    * Returns an iterable of [v,v] pairs for every value `v` in the set.
    */
-  entries(): IterableIterator<[number, number]> {
-    throw new Error('Not implemented');
+  * entries(): IterableIterator<[number, number]> {
+    for (const key of this.keys()) {
+      yield [key, key];
+    }
   }
+
   /**
    * Despite its name, returns an iterable of the values in the set,
    */
-  keys(): IterableIterator<number> {
-    throw new Error('Not implemented');
+  * keys(): IterableIterator<number> {
+    for (let i = 0; i < this.words.length; i += 1) {
+      let word = this.words[i];
+      let pos = i * BITS_PER_WORD;
+      while (word !== 0) {
+        if (word & 1) yield pos;
+        word >>= 1;
+        pos += 1;
+      }
+    }
   }
 
   /**
    * Returns an iterable of values in the set.
    */
   values(): IterableIterator<number> {
-    throw new Error('Not implemented');
+    return this.keys();
   }
 }
