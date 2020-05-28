@@ -324,12 +324,8 @@ export default class BitSet implements Set<number> {
     return 0;
   }
 
-  hashCode(): number {
-    let hash = 17;
-    for (let i = 0; i < this.words.length; i += 1) {
-      hash = hash * 17 + this.words[i] | 0;
-    }
-    return hash;
+  get size(): number {
+    return this.cardinality();
   }
 
   forEach(
@@ -340,7 +336,7 @@ export default class BitSet implements Set<number> {
       callback.call(thisArg, key, key, this);
     }
   }
-  
+
   /** Iterates over values in the set. */
   [Symbol.iterator](): IterableIterator<number> {
     return this.keys();
@@ -375,5 +371,10 @@ export default class BitSet implements Set<number> {
    */
   values(): IterableIterator<number> {
     return this.keys();
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  get [Symbol.toStringTag](): string {
+    return 'BitSet';
   }
 }
