@@ -98,7 +98,7 @@ export default class BitSet implements Set<number> {
         const fromPos = (from % BITS_PER_WORD);
         const toPos = (to % BITS_PER_WORD);
         let word = this.words[i];
-        for (let j = fromPos; j < toPos; j += 1) {
+        for (let j = fromPos; j <= toPos; j += 1) {
           if (set) {
             word |= 1 << j;
           } else {
@@ -120,7 +120,7 @@ export default class BitSet implements Set<number> {
       } else if (i === endWord) {
         const toPos = (to % BITS_PER_WORD);
         let word = this.words[i];
-        for (let j = 0; j < toPos; j += 1) {
+        for (let j = 0; j <= toPos; j += 1) {
           if (set) {
             word |= 1 << j;
           } else {

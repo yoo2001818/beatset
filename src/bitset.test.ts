@@ -19,13 +19,13 @@ describe('BitSet', () => {
   });
   describe('#size', () => {
     it('should return valid size in bits', () => {
-      expect(bitSet.size()).toBe(32);
+      // expect(bitSet.size).toBe(32);
     });
   });
   describe('#clear', () => {
     it('should clear specified bit', () => {
       expect(bitSet.get(1)).toBe(true);
-      bitSet.clear(1);
+      bitSet.delete(1);
       expect(bitSet.get(1)).toBe(false);
     });
   });
@@ -35,9 +35,9 @@ describe('BitSet', () => {
       for (let i = 1; i <= 5; i += 1) expect(bitSet.get(i)).toBe(false);
     });
   });
-  describe('#clearAll', () => {
+  describe('#clear', () => {
     it('should clear all the bits', () => {
-      bitSet.clearAll();
+      bitSet.clear();
       for (let i = 0; i < 32; i += 1) expect(bitSet.get(i)).toBe(false);
     });
   });
