@@ -140,4 +140,44 @@ describe('BitSet', () => {
       expect(new BitSet().isEmpty()).toBe(true);
     });
   });
+  describe('#intersects', () => {
+    it('should return correct value', () => {
+
+    });
+  });
+  describe('#contains', () => {
+    it('should return correct value', () => {
+
+    });
+  });
+  describe('#equals', () => {
+    it('should return correct value', () => {
+
+    });
+  });
+  describe('#compare', () => {
+    it('should return correct value', () => {
+
+    });
+  });
+  describe('#forEach', () => {
+    it('should iterate the bitset', () => {
+
+    });
+  });
+  describe('#entries', () => {
+    it('should iterate the bitset', () => {
+
+    });
+  });
+  describe('#keys', () => {
+    it('should iterate the bitset', () => {
+
+    });
+  });
+  describe('#values', () => {
+    it('should iterate the bitset', () => {
+
+    });
+  });
 });
